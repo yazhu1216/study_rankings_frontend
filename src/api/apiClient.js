@@ -1,0 +1,28 @@
+import axios from 'axios';
+import { useAuth } from "../contexts/AuthContext";
+
+const apiClient = axios.create({
+  baseURL: 'http://localhost:8000/api/',  
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  withCredentials: true, 
+});
+
+
+const setupInterceptors = () => {
+  apiClient.interceptors.request.use(
+    (config) => {
+      const { accessToken } = useAuth(); // 获取 accessToken
+      if (accessToken) {
+        config.headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+};
+
+export { apiClient, setupInterceptors };
