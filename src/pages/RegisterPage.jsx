@@ -1,11 +1,21 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function RegisterPage() {
-
+    const navigate = useNavigate();
+    const { register } = useAuth();
+    const [errors, setErrors] = useState({
+        name: '',
+        phone: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    });
     const [formData, setFormData] = useState({
         name: "",
         phone: "",
-        verification: "",
+        // verificationCode: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -20,6 +30,11 @@ export default function RegisterPage() {
         setFormData((prevData) => ({
             ...prevData,
             [name]: value,
+        }));
+        // 清除對應欄位的錯誤訊息
+        setErrors(prev => ({
+            ...prev,
+            [name]: ''
         }));
     };
 
@@ -36,19 +51,35 @@ export default function RegisterPage() {
                 setTimer(timer - 1);
             }, 1000);
 
-            return () => clearTimeout(countdown); // 清除計時器以避免記憶體洩漏
+            return () => clearTimeout(countdown); // 清除計時器
         }
     }, [timer]);
+    
+    
     // 註冊
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
+
         e.preventDefault()
-        console.log('handleSubmit');
-        console.log(formData);
-        // 註冊成功後要去驗證
+        const response = await register(formData);
+        // 這個之後要改
+        // if (response.success=true){
+        if (!response.errors) {
+
+            navigate("/verify-email");
+        } else {
+            setErrors(response.errors);
+
+            console.log(response.errors);
+
+            console.log("註冊失敗");
+
+        }
+
+        // 註冊成功後要去驗證email
     }
 
     return (
-        <div className="flex min-h-full flex-1 flex-col justify-center lg:px-8">
+        <div className="flex min-h-full flex-1 flex-col justify-center lg:px-8 p-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-sm">
                 <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
                     Create an account
@@ -69,6 +100,11 @@ export default function RegisterPage() {
                                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                             />
                         </div>
+                        {errors.name && (
+                            <p className="mt-1 text-sm text-red-500">
+                                {errors.name}
+                            </p>
+                        )}
                     </div>
                     <div>
                         <label className="block text-sm/6 font-medium text-gray-900">
@@ -93,8 +129,14 @@ export default function RegisterPage() {
                                     : "bg-gray-400 cursor-not-allowed"
                                     }`}
                             >Send
+
                             </button>}
                         </div>
+                        {errors.phone && (
+                            <p className="mt-1 text-sm text-red-500">
+                                {errors.phone}
+                            </p>
+                        )}
                     </div>
                     <div>
                         <label className="block text-sm/6 font-medium text-gray-900">
@@ -102,13 +144,14 @@ export default function RegisterPage() {
                         </label>
                         <div className="mt-1">
                             <input
-                                id="verification"
-                                name="verification"
+                                id="verificationCode"
+                                name="verificationCode"
                                 required
-                                onChange={handleChange}
+                                // onChange={handleChange}
                                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                             />
                         </div>
+
                     </div>
                     <div>
                         <label className="block text-sm/6 font-medium text-gray-900">
@@ -124,6 +167,11 @@ export default function RegisterPage() {
                                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                             />
                         </div>
+                        {errors.email && (
+                            <p className="mt-1 text-sm text-red-500">
+                                {errors.email}
+                            </p>
+                        )}
                     </div>
 
                     <div>
@@ -140,6 +188,11 @@ export default function RegisterPage() {
                                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                             />
                         </div>
+                        {errors.password && (
+                            <p className="mt-1 text-sm text-red-500">
+                                {errors.password}
+                            </p>
+                        )}
                     </div>
 
                     <div>
@@ -156,6 +209,11 @@ export default function RegisterPage() {
                                 className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                             />
                         </div>
+                        {errors.confirmPassword && (
+                            <p className="mt-1 text-sm text-red-500">
+                                {errors.confirmPassword}
+                            </p>
+                        )}
                     </div>
 
                     <div>
