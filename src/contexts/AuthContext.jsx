@@ -6,10 +6,10 @@ import { jwtDecode } from "jwt-decode";
 const defaultAuthContext = {
   isAuthenticated: false,
   currentMember: null,
-  //   register: null,
+  register: null,
   login: null,
   accessToken: null,
-  //   logout: null,
+  logout: null,
 };
 const AuthContext = createContext(defaultAuthContext);
 
@@ -23,23 +23,21 @@ export const AuthProvider = ({ children }) => {
     const checkTokenIsValid = async () => {
       if (!accessToken) {
         const response = await refresh();
-
-        if (response.status === 200) {
-          console.log(response.status);
-          const data = await response.json();
-          const tempPayload = jwtDecode(data.access);
-          setIsAuthenticated(true);
-          setAccessToken(data.access);
+        if (response.success === true) {
+          const tempPayload = jwtDecode(response.data.accessToken);
           setPayload(tempPayload);
+          setIsAuthenticated(true);
+          setAccessToken(response.data.accessToken);
         } else {
-          setIsAuthenticated(false);
           setPayload(null);
+          setIsAuthenticated(false);
         }
-        return;
+        return
       }
     };
-    // checkTokenIsValid();
-  }, [pathname]);
+    checkTokenIsValid();
+
+  }, [pathname,accessToken]);
 
   return (
     <AuthContext.Provider
@@ -47,47 +45,46 @@ export const AuthProvider = ({ children }) => {
         accessToken,
         isAuthenticated,
         currentMember: payload && {
-          id: payload.sub,
+          id: payload.id,
           name: payload.name,
         },
 
-        login: async (username, password) => {
-          const response = await login(username, password);
-          
-          console.log(response);
-          
-          const tempPayload = jwtDecode(response.data);
-          if (tempPayload) {
+        login: async (phone, password) => {
+          const response = await login(phone, password);
+          // const loginResponse = await response.json();
+          if (response.success === true) {
+            // console.log(response.data.accessToken);
+
+            const tempPayload = jwtDecode(response.data.accessToken);
+            // console.log(tempPayload); 
             setPayload(tempPayload);
             setIsAuthenticated(true);
-            console.log('access');
-            
-            setAccessToken(response.data);
+            setAccessToken(response.data.accessToken);
           } else {
             setPayload(null);
             setIsAuthenticated(false);
           }
           return response;
         },
-        refresh: async (username, password) => {
-          const data = await refresh();
-          console.log(data);
+        refresh: async () => {
+          const response = await refresh();
+          console.log(response);
 
-          const tempPayload = jwtDecode(data.access);
-          if (tempPayload) {
+          if (response.success === true) {
+            const tempPayload = jwtDecode(response.data.accessToken);
             setPayload(tempPayload);
             setIsAuthenticated(true);
-            setAccessToken(data.access);
+            setAccessToken(response.data.accessToken);
           } else {
             setPayload(null);
             setIsAuthenticated(false);
           }
-          return data.access;
+          return response.data.accessToken;
         },
         logout: async () => {
-          const response = await logout(accessToken);
+          const response = await logout();
           if (response.status === 200) {
-            console.log(response);
+            // console.log(response);
 
             setPayload(null);
             setIsAuthenticated(false);

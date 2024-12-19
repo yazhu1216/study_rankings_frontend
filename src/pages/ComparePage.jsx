@@ -1,6 +1,7 @@
 import CompareCard from '../components/CompareCard';
 
 export default function ComparePage() {
+
     const data = [
         {
             imageSrc: '/images/university1.svg',

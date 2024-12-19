@@ -1,13 +1,23 @@
 import { useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+// import { login } from "../api/auth";
+import { useNavigate } from "react-router";
 
 export default function LoginPage() {
     const [phone, setPhone] = useState("0912345678");
-    const [password, setPassword] = useState("user1");
-    const handleSubmit = (e) => {
-        e.preventDefault()
-        console.log('phone:', phone);
-        console.log('password:', password);
+    const [password, setPassword] = useState("123456");
+    const { login } = useAuth();
+    const navigate = useNavigate();
 
+    const handleSubmit =async (e) => {
+        e.preventDefault()
+        // console.log('phone:', phone);
+        // console.log('password:', password);
+        const response = await login(phone, password); 
+
+        if (response.success===true){
+            navigate("/");
+        }
     }
     return (
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">

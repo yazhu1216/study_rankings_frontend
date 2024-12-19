@@ -1,18 +1,16 @@
 // import axios from 'axios';
-import apiClient from './apiClient';  // 如果你使用 axios
 
-const login = async (username, password) => {
+const login = async (phone, password) => {
   try {
-    const response = await fetch("http://localhost:8000/api/login/", {
+    const response = await fetch("http://localhost:8000/api/v1/auth/login", {
       method: "POST",
       credentials: "include", // 包含 cookie
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ phone, password }),
     });
     const loginResponse = await response.json();
-
     return loginResponse;
   } catch (error) {
     console.error("Login error:", error);
@@ -22,31 +20,38 @@ const login = async (username, password) => {
 
 const refresh = async () => {
   try {
-    const response = await fetch("http://localhost:8000/api/refresh/", {
-      method: "POST",
+    const response = await fetch("http://localhost:8000/api/v1/auth/refresh", {
+      method: "GET",
       credentials: "include", // 包含 cookie
       headers: {
         "Content-Type": "application/json",
       },
+      
     });
-    return response;
+    console.log('responseresponseresponse:',response);
+    
+    const loginResponse = await response.json();
+
+    return loginResponse;
   } catch (error) {
     console.error("refresh error:", error);
     throw error;
   }
 };
 
-const logout = async (accessToken) => {
+const logout = async () => {
   try {
-    const headers = {
-      Authorization: `Bearer ${accessToken}`, // 使用 Bearer token
-    };
-    const response = await fetch("http://localhost:8000/api/logout/", {
+    // const headers = {
+    //   Authorization: `Bearer ${accessToken}`, // 使用 Bearer token
+    // };    
+    const response = await fetch("http://localhost:8000/api/v1/auth/logout", {
       credentials: "include", // 包含 cookie
       method: "POST",
-      headers: headers,
+      // headers: headers,
     });
+    console.log('logout',response);
     return response;
+    
   } catch (error) {
     console.error("logout error:", error);
     throw error;

@@ -1,5 +1,5 @@
 import SearchInput from "../components/SearchInput";
-import UniversityList from "../components/UniversityList";
+import UniversityList from "../components/university/UniversityList";
 import { useState } from "react";
 
 
@@ -21,7 +21,7 @@ export default function SearchPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen">
             <div className="max-w-6xl mx-auto p-8">
                 <h1 className="text-2xl font-bold mb-8 text-center">Search Page</h1>
                 <div className="bg-white rounded-lg shadow-md p-6">
