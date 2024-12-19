@@ -13,7 +13,7 @@ const apiClient = axios.create({
 const setupInterceptors = () => {
   apiClient.interceptors.request.use(
     (config) => {
-      const { accessToken } = useAuth(); // 获取 accessToken
+      const { accessToken } = useAuth();
       if (accessToken) {
         config.headers['Authorization'] = `Bearer ${accessToken}`;
       }

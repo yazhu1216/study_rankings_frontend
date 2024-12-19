@@ -1,15 +1,16 @@
 import { createContext, useState, useEffect, useContext } from "react";
-import { login, refresh, logout } from "../api/auth";
+import { login, refresh, logout, register } from "../api/auth";
 import { useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 const defaultAuthContext = {
   isAuthenticated: false,
   currentMember: null,
-  register: null,
+  refresh: null,
   login: null,
   accessToken: null,
   logout: null,
+  register: null,
 };
 const AuthContext = createContext(defaultAuthContext);
 
@@ -37,7 +38,7 @@ export const AuthProvider = ({ children }) => {
     };
     checkTokenIsValid();
 
-  }, [pathname,accessToken]);
+  }, [pathname, accessToken]);
 
   return (
     <AuthContext.Provider
@@ -91,6 +92,21 @@ export const AuthProvider = ({ children }) => {
             setAccessToken("");
           } else {
             console.log('錯誤');
+          }
+          return response;
+        },
+        register: async (registerData) => {
+          const response = await register(registerData);
+          console.log('auth response', response);
+
+          if (response.success === true & !response.errors) {
+            const tempPayload = jwtDecode(response.data.accessToken);
+            setPayload(tempPayload);
+            setIsAuthenticated(true);
+            setAccessToken(response.data.accessToken);
+          } else {
+            setPayload(null);
+            setIsAuthenticated(false);
           }
           return response;
         },

@@ -26,12 +26,8 @@ const refresh = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-      
-    });
-    console.log('responseresponseresponse:',response);
-    
+    });  
     const loginResponse = await response.json();
-
     return loginResponse;
   } catch (error) {
     console.error("refresh error:", error);
@@ -40,16 +36,11 @@ const refresh = async () => {
 };
 
 const logout = async () => {
-  try {
-    // const headers = {
-    //   Authorization: `Bearer ${accessToken}`, // 使用 Bearer token
-    // };    
+  try { 
     const response = await fetch("http://localhost:8000/api/v1/auth/logout", {
       credentials: "include", // 包含 cookie
       method: "POST",
-      // headers: headers,
     });
-    console.log('logout',response);
     return response;
     
   } catch (error) {
@@ -58,4 +49,24 @@ const logout = async () => {
   }
 };
 
-export { login, refresh, logout };
+const register = async (registerData) => {
+  try { 
+    const response = await fetch("http://localhost:8000/api/v1/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(registerData)
+
+    });
+    const registerResponse = await response.json();
+
+    // console.log('register',registerResponse);
+    return registerResponse;
+    
+  } catch (error) {
+    console.error("register error:", error);
+    throw error;
+  }
+};
+export { login, refresh, logout, register };
